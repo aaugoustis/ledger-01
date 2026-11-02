@@ -35,9 +35,12 @@ jobs:
   changeset:
     name: Changeset
     # Public repository only, like releases. The Version PR and Dependabot PRs carry no changesets.
+    # Dependabot is matched by the PR's author: github.actor is whoever triggered the run, such as a
+    # maintainer pressing "Update branch".
     if: >-
       github.event_name == 'pull_request' && !github.event.repository.private &&
-      github.head_ref != 'changeset-release/main' && github.actor != 'dependabot[bot]'
+      github.head_ref != 'changeset-release/main' &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
