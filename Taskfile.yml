@@ -1,0 +1,203 @@
+# https://taskfile.dev — run `task --list` to see everything.
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  default:
+    cmds: [task --list]
+    silent: true
+
+  # --- setup ---------------------------------------------------------------
+  setup:
+    desc: Install JS dependencies and download Go modules
+    cmds:
+      - bun install
+      - task: setup:go
+
+  setup:go:
+    internal: true
+    dir: backend
+    cmds:
+      - go mod download
+
+  # --- local services --------------------------------------------------------
+  db:up:
+    desc: Start Postgres (docker compose) and wait until healthy
+    cmds:
+      - docker compose up -d --wait db
+
+  db:down:
+    desc: Stop Postgres (keeps data)
+    cmds:
+      - docker compose down
+
+  db:reset:
+    desc: Destroy the local database volume and start fresh
+    cmds:
+      - docker compose down -v
+      - docker compose up -d --wait db
+      - task: migrate
+
+  db:psql:
+    desc: Open psql against the local database
+    interactive: true
+    cmds:
+      - docker compose exec db psql -U ledger ledger
+
+  migrate:
+    desc: Apply database migrations
+    dir: backend
+    cmds:
+      - go run ./cmd/migrate up
+
+  migrate:down:
+    desc: Roll back the last migration
+    dir: backend
+    cmds:
+      - go run ./cmd/migrate down
+
+  migrate:status:
+    desc: Show migration status
+    dir: backend
+    cmds:
+      - go run ./cmd/migrate status
+
+  migrate:new:
+    desc: "Create a migration: task migrate:new -- add_budgets"
+    dir: backend
+    cmds:
+      - go run ./cmd/migrate create {{.CLI_ARGS}}
+
+  # --- dev -------------------------------------------------------------------
+  dev:
+    desc: Run the Go API (:8080) and the web app (:3000)
+    deps: [dev:api, dev:web]
+
+  dev:api:
+    desc: Run the Go API locally
+    dir: backend
+    cmds:
+      - go run ./cmd/api
+
+  dev:web:
+    desc: Run the Next.js dev server
+    dir: apps/web
+    cmds:
+      - bun run dev
+
+  jobs:
+    desc: "Run the scheduled jobs once (recurring top-up); task jobs -- -every 1h keeps running"
+    dir: backend
+    cmds:
+      - go run ./cmd/jobs {{.CLI_ARGS}}
+
+  # --- codegen ---------------------------------------------------------------
+  gen:
+    desc: Regenerate protobuf (Go + TS) and sqlc code
+    cmds:
+      - task: gen:proto
+      - task: gen:sqlc
+
+  gen:proto:
+    desc: Generate Go + TS code from proto/
+    cmds:
+      - bun x buf lint
+      - bun run gen:proto
+
+  gen:sqlc:
+    desc: Generate Go code from SQL queries (sqlc runs in Docker; it needs cgo)
+    dir: backend
+    cmds:
+      - docker run --rm -v "{{.ROOT_DIR}}/backend:/src" -w /src sqlc/sqlc:1.31.1 generate
+
+  gen:check:
+    desc: Fail if generated code is out of date
+    vars:
+      GEN_DIRS: backend/gen backend/internal/db/dbq packages/api/src/gen
+    cmds:
+      - task: gen
+      - git diff --exit-code -- {{.GEN_DIRS}}
+      # New generated files are untracked, so git diff alone misses them.
+      - |
+        new=$(git ls-files --others --exclude-standard -- {{.GEN_DIRS}})
+        if [ -n "$new" ]; then echo "Generated files not committed:"; echo "$new"; exit 1; fi
+
+  # --- quality ---------------------------------------------------------------
+  test:
+    desc: Go tests (testcontainers; Docker must be running) and bun tests
+    cmds:
+      - task: test:go
+      - task: test:js
+
+  test:go:
+    dir: backend
+    cmds:
+      - go test ./... {{.CLI_ARGS}}
+
+  test:js:
+    cmds:
+      - bun test packages apps/web/src {{.CLI_ARGS}}
+
+  e2e:
+    desc: Playwright end-to-end tests (starts the API and web app)
+    dir: apps/web
+    cmds:
+      - bun run e2e {{.CLI_ARGS}}
+
+  # --- docs ----------------------------------------------------------------
+  docs:render:
+    desc: Render the docs SVGs (icon, architecture map) to the PNGs the README embeds
+    dir: apps/web
+    cmds:
+      - bun scripts/render-svg.ts ../../docs/brand/icon.svg ../../docs/brand/icon.png 512
+      - bun scripts/render-svg.ts ../../docs/brand/architecture.svg ../../docs/brand/architecture.png 1600
+
+  docs:screenshots:
+    desc: Capture docs/screenshots from a made-up household (needs the database running)
+    dir: apps/web
+    cmds:
+      - bun x playwright test --config playwright.docs.config.ts {{.CLI_ARGS}}
+
+  lint:
+    desc: go vet, gofmt check and Biome
+    cmds:
+      - task: lint:go
+      - bun x biome check .
+
+  lint:go:
+    dir: backend
+    cmds:
+      - go vet ./...
+      - test -z "$(gofmt -l .)" || (gofmt -l . && echo "run gofmt -w" && exit 1)
+
+  # --- builds ----------------------------------------------------------------
+  build:api:
+    desc: Build the local API binary
+    dir: backend
+    cmds:
+      - go build -trimpath -o bin/ ./cmd/api ./cmd/migrate ./cmd/jobs
+
+  build:lambda:
+    desc: Cross-compile the Lambda bootstrap (linux/arm64, provided.al2023)
+    dir: backend
+    env:
+      GOOS: linux
+      GOARCH: arm64
+      CGO_ENABLED: "0"
+    cmds:
+      - go build -tags lambda.norpc -trimpath -ldflags "-s -w" -o dist/lambda/bootstrap ./cmd/lambda
+      - go build -tags lambda.norpc -trimpath -ldflags "-s -w" -o dist/migrate/bootstrap ./cmd/migrate
+      - go build -tags lambda.norpc -trimpath -ldflags "-s -w" -o dist/jobs/bootstrap ./cmd/jobs
+
+  build:web:
+    desc: Production build of the web app
+    dir: apps/web
+    cmds:
+      - bun run build
+
+  ds:bundle:
+    desc: Build packages/ui as a classic script for the design-system artifact
+    dir: packages/ui
+    cmds:
+      - bun run build:artifact

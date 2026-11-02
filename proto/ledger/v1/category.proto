@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+enum CategoryKind {
+  CATEGORY_KIND_UNSPECIFIED = 0;
+  CATEGORY_KIND_EXPENSE = 1;
+  CATEGORY_KIND_INCOME = 2;
+}
+
+message Category {
+  string id = 1;
+  CategoryKind kind = 2;
+  string name = 3;
+  // Lucide icon name in kebab case, e.g. "shopping-cart".
+  string icon = 4;
+  // Category palette token name, e.g. "cat-orange".
+  string color = 5;
+  int32 position = 6;
+  bool archived = 7;
+  int64 transaction_count = 8;
+  int64 wallet_count = 9;
+  // Wallets where this category is hidden from pickers.
+  repeated string hidden_in_wallet_ids = 10;
+}
+
+service CategoryService {
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse);
+  rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
+  rpc UpdateCategory(UpdateCategoryRequest) returns (UpdateCategoryResponse);
+  // Deletes a category. If it has transactions, replacement_id is required and they move there.
+  rpc DeleteCategory(DeleteCategoryRequest) returns (DeleteCategoryResponse);
+  // Moves every transaction of the sources into the target, then deletes the sources.
+  rpc MergeCategories(MergeCategoriesRequest) returns (MergeCategoriesResponse);
+  rpc SetCategoryHidden(SetCategoryHiddenRequest) returns (SetCategoryHiddenResponse);
+}
+
+message ListCategoriesRequest {
+  bool include_archived = 1;
+}
+
+message ListCategoriesResponse {
+  repeated Category categories = 1;
+}
+
+message CreateCategoryRequest {
+  CategoryKind kind = 1;
+  string name = 2;
+  string icon = 3;
+  string color = 4;
+}
+
+message CreateCategoryResponse {
+  Category category = 1;
+}
+
+message UpdateCategoryRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string icon = 3;
+  optional string color = 4;
+  optional int32 position = 5;
+  optional bool archived = 6;
+}
+
+message UpdateCategoryResponse {
+  Category category = 1;
+}
+
+message DeleteCategoryRequest {
+  string id = 1;
+  optional string replacement_id = 2;
+}
+
+message DeleteCategoryResponse {
+  int64 moved_transaction_count = 1;
+}
+
+message MergeCategoriesRequest {
+  repeated string source_ids = 1;
+  string target_id = 2;
+}
+
+message MergeCategoriesResponse {
+  Category target = 1;
+  int64 moved_transaction_count = 2;
+}
+
+message SetCategoryHiddenRequest {
+  string wallet_id = 1;
+  string category_id = 2;
+  bool hidden = 3;
+}
+
+message SetCategoryHiddenResponse {}

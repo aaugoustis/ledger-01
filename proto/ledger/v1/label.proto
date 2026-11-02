@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+message Label {
+  string id = 1;
+  string name = 2;
+  // Category palette token name, e.g. "cat-teal".
+  string color = 3;
+}
+
+service LabelService {
+  rpc ListLabels(ListLabelsRequest) returns (ListLabelsResponse);
+  rpc CreateLabel(CreateLabelRequest) returns (CreateLabelResponse);
+  rpc UpdateLabel(UpdateLabelRequest) returns (UpdateLabelResponse);
+  // Removes the label from every transaction.
+  rpc DeleteLabel(DeleteLabelRequest) returns (DeleteLabelResponse);
+}
+
+message ListLabelsRequest {}
+
+message ListLabelsResponse {
+  repeated Label labels = 1;
+}
+
+message CreateLabelRequest {
+  string name = 1;
+  string color = 2;
+}
+
+message CreateLabelResponse {
+  Label label = 1;
+}
+
+message UpdateLabelRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string color = 3;
+}
+
+message UpdateLabelResponse {
+  Label label = 1;
+}
+
+message DeleteLabelRequest {
+  string id = 1;
+}
+
+message DeleteLabelResponse {}

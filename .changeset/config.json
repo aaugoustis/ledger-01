@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "franco-roura/ledger-01" }],
+  "commit": false,
+  "fixed": [["@ledger-01/web", "@ledger-01/backend", "@ledger-01/api", "@ledger-01/ui"]],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [],
+  "privatePackages": { "version": true, "tag": false },
+  "format": false
+}

@@ -1,0 +1,22 @@
+<!-- @dsCard group="Money" height=120 subtitle="Category discs, three sizes and the palette" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<div id="root" class="m1-stack"></div>
+<script>
+  var M = window.Module01, h = React.createElement;
+  var icons = ['utensils', 'shopping-cart', 'bus', 'house', 'heart-pulse', 'film', 'plane', 'graduation-cap', 'dumbbell', 'sparkles', 'gift', 'users', 'banknote', 'trending-up', 'undo-2', 'ellipsis'];
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
+    h('div', { style: { display: 'flex', gap: 12, alignItems: 'center' } },
+      h(M.CategoryIcon, { icon: 'shopping-cart', color: 'cat-amber', size: 'sm' }),
+      h(M.CategoryIcon, { icon: 'shopping-cart', color: 'cat-amber' }),
+      h(M.CategoryIcon, { icon: 'shopping-cart', color: 'cat-amber', size: 'lg' }),
+      h(M.CategoryIcon, { icon: 'arrow-left-right', color: 'cat-slate' }),
+      h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14 } }, h(M.ColorDot, { color: 'cat-teal' }), 'Trip label')),
+    h('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } }, M.categoryColors.map(function (c, i) {
+      return h(M.CategoryIcon, { key: c, icon: icons[i], color: c, size: 'sm', label: c });
+    }))));
+</script>
+</body>
+</html>

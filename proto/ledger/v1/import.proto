@@ -1,0 +1,229 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "ledger/v1/transaction.proto";
+
+// Bank statement import into one wallet: upload a CSV or XLSX file, map its columns, review the
+// rows, import them. The server parses the file and keeps its rows for 24 hours between the
+// steps, so each step may reach a different API instance. Imported rows are expenses and income
+// in the wallet's currency, validated like manual entries.
+
+// Which amounts are money going out.
+enum ImportSign {
+  IMPORT_SIGN_UNSPECIFIED = 0;
+  // "-12.30" is an expense (most bank accounts).
+  IMPORT_SIGN_NEGATIVE_IS_EXPENSE = 1;
+  // "12.30" is an expense (most card statements).
+  IMPORT_SIGN_POSITIVE_IS_EXPENSE = 2;
+}
+
+enum DecimalSeparator {
+  DECIMAL_SEPARATOR_UNSPECIFIED = 0;
+  // 1,234.56
+  DECIMAL_SEPARATOR_DOT = 1;
+  // 1.234,56
+  DECIMAL_SEPARATOR_COMMA = 2;
+}
+
+// Which file columns hold what. Columns are 0-based; an unset optional column isn't mapped.
+// Amounts come from amount_column, or from debit_column (money out) and/or credit_column
+// (money in).
+message ImportMapping {
+  // Rows above the table (a bank's logo, account details, …), skipped.
+  int32 skip_rows = 11;
+  // The first row after the skipped ones names the columns and isn't imported.
+  bool has_header = 1;
+  int32 date_column = 2;
+  // One of ImportService's date formats, e.g. "dd/mm/yyyy".
+  string date_format = 3;
+  optional int32 amount_column = 4;
+  optional int32 debit_column = 5;
+  optional int32 credit_column = 6;
+  // Required with amount_column.
+  ImportSign sign = 7;
+  DecimalSeparator decimal_separator = 8;
+  optional int32 note_column = 9;
+  // Matched to the household's categories by name.
+  optional int32 category_column = 10;
+  // How the bank words purchases, discounts and refunds: one of UploadImportFileResponse.banks.
+  // Upload fills it in with the wallet's saved bank, else the one detected from the descriptions;
+  // empty when none was detected, which detects again on every read ("generic" turns it off).
+  string bank = 12;
+}
+
+// A bank whose statement wording the import knows ("generic" knows none).
+message ImportBank {
+  string id = 1;
+  string name = 2;
+  // ISO 3166-1 alpha-2; empty for "generic".
+  string country = 3;
+}
+
+message ImportCells {
+  repeated string cells = 1;
+}
+
+// One data row of the file, read with a mapping.
+message ImportRow {
+  // 0-based among the data rows (the header excluded).
+  int32 index = 1;
+  repeated string cells = 2;
+  // Why the row can't be imported; the fields below are empty when set.
+  string error = 3;
+  string occurred_on = 4;
+  // Positive, in the wallet's currency.
+  int64 amount_minor = 5;
+  // EXPENSE or INCOME.
+  TransactionKind kind = 6;
+  string note = 7;
+  // The suggested category: from the category column, else from a category rule. Empty when
+  // neither matched: the row needs one before it can be imported.
+  string category_id = 8;
+  // "column", "rule" or empty.
+  string category_source = 9;
+  // The row looks like one already in the wallet or the file (see duplicate_reason). Duplicates
+  // start unticked.
+  bool duplicate = 10;
+  ImportDuplicate duplicate_reason = 11;
+  // The wallet transaction it matches, as it is now (not for DUPLICATE_FILE).
+  string match_note = 12;
+  string match_date = 13;
+  // A purchase with discounts or partial refunds of the file merged in (e.g. Uruguay's
+  // "REDIVA 19210<merchant>" for "COMPRA <merchant>"): their total (positive) and descriptions.
+  // amount_minor is net of it.
+  int64 discount_minor = 14;
+  repeated string discount_notes = 15;
+  // A discount merged into another row of the file (that row's index). It can't be chosen.
+  optional int32 merged_into = 16;
+  // A discount for a purchase imported earlier: importing it lowers that expense instead of
+  // adding a transaction, so it needs no category.
+  string discounts_transaction_id = 17;
+  string discounts_note = 18;
+  string discounts_date = 19;
+  // A purchase refunded in full by a later row of the file ("DEVOLUCION <merchant>"), and that
+  // refund: both start unticked, as if neither happened (a double charge and its refund, say).
+  // Ticked, they import as an expense and an income.
+  optional int32 refunded_by = 20;
+  optional int32 refund_of = 21;
+  // A full refund of a purchase already in the wallet, as that transaction is now. Starts
+  // unticked; importing it adds the refund as income.
+  string refunds_note = 22;
+  string refunds_date = 23;
+}
+
+enum ImportDuplicate {
+  IMPORT_DUPLICATE_UNSPECIFIED = 0;
+  // This bank row was imported before (same fingerprint), even if that transaction was renamed
+  // or repriced since.
+  IMPORT_DUPLICATE_IMPORTED = 1;
+  // Same date, amount and note as a wallet transaction.
+  IMPORT_DUPLICATE_SAME = 2;
+  // Same amount as a wallet transaction within 2 days, with another note.
+  IMPORT_DUPLICATE_SIMILAR = 3;
+  // Same date, amount and note as an earlier row of the file.
+  IMPORT_DUPLICATE_FILE = 4;
+}
+
+// "Note contains pattern → category", applied to imported rows the category column didn't
+// settle. The longest matching pattern wins; a rule only applies to rows of its category's kind.
+message CategoryRule {
+  string id = 1;
+  string pattern = 2;
+  string category_id = 3;
+}
+
+service ImportService {
+  // Parses a CSV (UTF-8, UTF-16 or Windows-1252; comma, semicolon, tab or pipe) or XLSX file of
+  // at most 4 MB and 10,000 rows. Legacy .xls isn't supported.
+  rpc UploadImportFile(UploadImportFileRequest) returns (UploadImportFileResponse);
+  // Reads the uploaded rows with a mapping.
+  rpc PreviewImport(PreviewImportRequest) returns (PreviewImportResponse);
+  // Imports the chosen rows in one database transaction and forgets the upload.
+  rpc CommitImport(CommitImportRequest) returns (CommitImportResponse);
+
+  rpc ListCategoryRules(ListCategoryRulesRequest) returns (ListCategoryRulesResponse);
+  rpc CreateCategoryRule(CreateCategoryRuleRequest) returns (CreateCategoryRuleResponse);
+  rpc DeleteCategoryRule(DeleteCategoryRuleRequest) returns (DeleteCategoryRuleResponse);
+}
+
+message UploadImportFileRequest {
+  string wallet_id = 1;
+  string file_name = 2;
+  bytes content = 3;
+}
+
+message UploadImportFileResponse {
+  string batch_id = 1;
+  int32 column_count = 2;
+  // Rows in the file, a header included.
+  int32 row_count = 3;
+  // The first 30 rows as they are in the file.
+  repeated ImportCells sample = 4;
+  // A mapping to start from: the wallet's saved one when it fits the file, else a guess from
+  // the headers and values.
+  ImportMapping mapping = 5;
+  bool saved_mapping = 6;
+  // "csv" or "xlsx", and for CSV the detected encoding and delimiter.
+  string format = 7;
+  string encoding = 8;
+  string delimiter = 9;
+  // The date formats a mapping may use.
+  repeated string date_formats = 10;
+  // Banks to choose from, "generic" first.
+  repeated ImportBank banks = 11;
+}
+
+message PreviewImportRequest {
+  string batch_id = 1;
+  ImportMapping mapping = 2;
+  // Only the first rows (for a live preview while mapping); 0 means all.
+  int32 limit = 3;
+}
+
+message PreviewImportResponse {
+  repeated ImportRow rows = 1;
+  // Data rows in the file.
+  int32 total = 2;
+}
+
+message ImportChoice {
+  int32 index = 1;
+  // The suggested category or another of the row's kind. Not needed for a row that discounts an
+  // earlier purchase (discounts_transaction_id).
+  string category_id = 2;
+}
+
+message CommitImportRequest {
+  string batch_id = 1;
+  // The rows are read again with this mapping, so the imported values match the preview.
+  ImportMapping mapping = 2;
+  repeated ImportChoice rows = 3;
+  // Remember the mapping for this wallet's next import.
+  bool save_mapping = 4;
+}
+
+message CommitImportResponse {
+  int64 imported_count = 1;
+}
+
+message ListCategoryRulesRequest {}
+
+message ListCategoryRulesResponse {
+  repeated CategoryRule rules = 1;
+}
+
+message CreateCategoryRuleRequest {
+  string pattern = 1;
+  string category_id = 2;
+}
+
+message CreateCategoryRuleResponse {
+  CategoryRule rule = 1;
+}
+
+message DeleteCategoryRuleRequest {
+  string id = 1;
+}
+
+message DeleteCategoryRuleResponse {}

@@ -1,0 +1,24 @@
+<!-- @dsCard group="Forms" height=420 subtitle="The field, and the calendar it opens" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<div id="root" class="m1-row" style="align-items: flex-start"></div>
+<script>
+  var M = window.Module01, h = React.createElement;
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function Demo() {
+    var today = new Date();
+    var s = React.useState(iso(today));
+    var picked = s[0].split('-');
+    var selected = new Date(Number(picked[0]), Number(picked[1]) - 1, Number(picked[2]));
+    return h(React.Fragment, null,
+      h('div', { style: { width: 260 } }, h(M.Field, { label: 'Date', htmlFor: 'dp' }, h(M.DatePicker, { id: 'dp', value: s[0], onChange: s[1] }))),
+      h('div', { style: { background: 'var(--shell)', borderRadius: 24, padding: 12, boxShadow: 'var(--shadow-float)' } },
+        h(M.Calendar, { mode: 'single', required: true, selected: selected, onSelect: function (d) { s[1](iso(d)); } })));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

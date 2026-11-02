@@ -1,0 +1,30 @@
+<!-- @dsCard group="Forms" height=150 subtitle="Pick several wallets, or leave it on all" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<form id="root" class="m1-row" style="align-items: flex-start" onsubmit="return false"></form>
+<script>
+  var M = window.Module01, h = React.createElement;
+  var wallets = [
+    { id: 'northbank', name: 'Northbank', currency: 'USD' },
+    { id: 'pesos', name: 'Northbank pesos', currency: 'UYU' },
+    { id: 'cash', name: 'Cash', currency: 'UYU' },
+    { id: 'travel', name: 'Travel card', currency: 'EUR' }
+  ];
+  function Picker(props) {
+    var v = React.useState(props.initial);
+    return h('div', { style: { width: 260 } }, h(M.Field, { label: props.label, htmlFor: props.id },
+      h(M.MultiCombobox, {
+        id: props.id, value: v[0], onChange: v[1], options: wallets, allLabel: 'All wallets', noun: 'wallets',
+        searchPlaceholder: 'Search wallets…',
+        getKey: function (o) { return o.id; }, getSearchText: function (o) { return o.name + ' ' + o.currency; },
+        renderOption: function (o) { return h(React.Fragment, null, h('span', null, o.name), h('span', { className: 'hud-sm text-ink-soft' }, o.currency)); }
+      })));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(Picker, { id: 'w1', label: 'Wallets', initial: [] }),
+    h(Picker, { id: 'w2', label: 'Wallets', initial: ['northbank', 'pesos'] })));
+</script>
+</body>
+</html>

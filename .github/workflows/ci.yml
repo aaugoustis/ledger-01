@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - name: Biome
+        run: bun x biome ci .
+      - name: Typecheck
+        run: |
+          bun run --cwd packages/ui typecheck
+          bun run --cwd apps/web typecheck
+      - name: gofmt and go vet
+        run: task lint:go
+
+  changeset:
+    name: Changeset
+    # Public repository only, like releases. The Version PR and Dependabot PRs carry no changesets.
+    if: >-
+      github.event_name == 'pull_request' && !github.event.repository.private &&
+      github.head_ref != 'changeset-release/main' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - name: Every changed package has a changeset
+        run: bun x changeset status --since="origin/$GITHUB_BASE_REF"
+
+  codegen:
+    name: Generated code is up to date
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - name: task gen, then check for drift
+        run: task gen:check
+
+  test-go:
+    name: Go tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      # Integration tests start Postgres with testcontainers (Docker is on the runner).
+      - run: task test:go
+
+  test-js:
+    name: Bun tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - run: task test:js
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Same settings as a local .env with the dev-only login switched on.
+    env:
+      APP_ENV: development
+      AUTH_DEV_LOGIN: "1"
+      ALLOWED_EMAILS: e2e@example.com
+      PUBLIC_URL: http://localhost:3000
+      DATABASE_URL: postgres://ledger:ledger@localhost:5432/ledger?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+
+      - name: Playwright version
+        id: playwright
+        working-directory: apps/web
+        run: echo "version=$(bun -e 'console.log(require("@playwright/test/package.json").version)')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        id: browsers
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install Chromium
+        if: steps.browsers.outputs.cache-hit != 'true'
+        working-directory: apps/web
+        run: bun x playwright install --with-deps chromium
+      - name: Install Chromium system dependencies
+        if: steps.browsers.outputs.cache-hit == 'true'
+        working-directory: apps/web
+        run: bun x playwright install-deps chromium
+
+      - name: Start Postgres and migrate
+        run: |
+          task db:up
+          task migrate
+      # Playwright starts the API and the Next dev server the way `task dev` does.
+      - run: task e2e
+
+      - name: Upload traces
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-traces
+          path: apps/web/test-results/
+          retention-days: 7

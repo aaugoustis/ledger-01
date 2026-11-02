@@ -1,0 +1,17 @@
+<!-- @dsCard group="Money" height=110 subtitle="Signed figures in four sizes" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<div id="root" class="m1-row" style="align-items: baseline"></div>
+<script>
+  var M = window.Module01, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.Amount, { minor: BigInt(123456), currency: 'USD', minorUnits: 2, size: 'xl' }),
+    h(M.Amount, { minor: BigInt(-248015), currency: 'USD', minorUnits: 2, size: 'lg' }),
+    h(M.Amount, { minor: BigInt(-1076), currency: 'USD', minorUnits: 2, code: false }),
+    h(M.Amount, { minor: BigInt(-470000), currency: 'UYU', minorUnits: 2, size: 'sm', tone: 'muted' }),
+    h(M.Amount, { minor: BigInt(0), currency: 'USD', minorUnits: 2 })));
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.woff2 binary
+
+# Generated code: collapse in diffs
+backend/gen/** linguist-generated=true
+backend/internal/db/dbq/** linguist-generated=true
+packages/api/src/gen/** linguist-generated=true
+
+# Import fixtures keep their exact bytes (BOMs, CRLF, Windows-1252).
+backend/internal/importer/testdata/** -text

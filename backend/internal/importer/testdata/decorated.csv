@@ -1,0 +1,10 @@
+Banco del Sur,,,,
+Estado de cuenta,,,,
+Titular,PEREZ GOMEZ ANA,,,
+Nro de cuenta,000123456,,Moneda,USD
+Fecha de emisión,30/10/2026,,,
+,,,,
+Fecha,Concepto,Referencia,Débito,Crédito
+01/10/2026,Supermercado Central,10001,"45,20",
+03/10/2026,Transferencia recibida,10002,,"1.500,00"
+05/10/2026,Farmacia Norte,10003,"12,90",

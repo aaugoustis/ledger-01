@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Ledger/01 - lets GitHub Actions deploy with SST through OIDC, with no long-lived AWS keys.
+  Only jobs that run in the repository's deploy environment can assume the role.
+
+Parameters:
+  # Newer repositories put immutable owner and repository IDs in the token's subject
+  # (repo:OWNER@ID/NAME@ID), so a deleted and re-created repository with the same name can't deploy.
+  GitHubSubjectPrefix:
+    Type: String
+    Description: >-
+      The OIDC subject prefix of the repository that deploys. Print it with
+      gh api repos/OWNER/NAME/actions/oidc/customization/sub --jq .sub_claim_prefix
+      (for example repo:your-name@1234/ledger-01@5678). If that prints nothing or null, the
+      repository uses the older format: repo:OWNER/NAME. The match is case-sensitive.
+    AllowedPattern: "repo:[A-Za-z0-9_.-]+(@[0-9]+)?/[A-Za-z0-9_.-]+(@[0-9]+)?"
+  GitHubEnvironment:
+    Type: String
+    Default: production
+    Description: The GitHub environment the deploy job runs in (.github/workflows/deploy.yml).
+  CreateOIDCProvider:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "true"
+    Description: Set to false if this AWS account already has the token.actions.githubusercontent.com identity provider.
+
+Conditions:
+  CreateProvider: !Equals [!Ref CreateOIDCProvider, "true"]
+
+Resources:
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+      # GitHub's published thumbprints. AWS verifies GitHub through its own trust store and
+      # ignores these, but older accounts still ask for at least one.
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
+
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Assumed by the Ledger/01 deploy workflow (SST).
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If
+                - CreateProvider
+                - !Ref GitHubOIDCProvider
+                - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub ${GitHubSubjectPrefix}:environment:${GitHubEnvironment}
+      # SST creates IAM roles, Lambda, API Gateway, CloudFront, S3, SSM and EventBridge resources,
+      # so a narrower policy breaks with every new component. The trust policy above is the fence.
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess
+
+Outputs:
+  RoleArn:
+    Description: Set this as the AWS_DEPLOY_ROLE_ARN repository variable.
+    Value: !GetAtt DeployRole.Arn

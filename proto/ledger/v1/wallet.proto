@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Wallet {
+  string id = 1;
+  string name = 2;
+  // ISO 4217 code. Every expense and income in this wallet is in this currency.
+  string currency = 3;
+  int64 initial_balance_minor = 4;
+  // initial_balance_minor + income + transfers in - expenses - transfers out, up to the
+  // request's today (upcoming rows don't count).
+  int64 balance_minor = 5;
+  bool hidden = 6;
+  int32 position = 7;
+  bool archived = 8;
+  int64 transaction_count = 9;
+  google.protobuf.Timestamp created_at = 10;
+}
+
+service WalletService {
+  rpc ListWallets(ListWalletsRequest) returns (ListWalletsResponse);
+  rpc GetWallet(GetWalletRequest) returns (GetWalletResponse);
+  rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse);
+  rpc UpdateWallet(UpdateWalletRequest) returns (UpdateWalletResponse);
+  // Soft delete: the wallet disappears everywhere but its history is kept.
+  rpc ArchiveWallet(ArchiveWalletRequest) returns (ArchiveWalletResponse);
+  // Hard delete, only allowed while the wallet has no transactions.
+  rpc DeleteWallet(DeleteWalletRequest) returns (DeleteWalletResponse);
+}
+
+message ListWalletsRequest {
+  bool include_hidden = 1;
+  bool include_archived = 2;
+  // The caller's local date, "YYYY-MM-DD"; empty means today in UTC.
+  string today = 3;
+}
+
+message ListWalletsResponse {
+  repeated Wallet wallets = 1;
+}
+
+message GetWalletRequest {
+  string id = 1;
+  string today = 2;
+}
+
+message GetWalletResponse {
+  Wallet wallet = 1;
+}
+
+message CreateWalletRequest {
+  string name = 1;
+  string currency = 2;
+  int64 initial_balance_minor = 3;
+}
+
+message CreateWalletResponse {
+  Wallet wallet = 1;
+}
+
+message UpdateWalletRequest {
+  string id = 1;
+  optional string name = 2;
+  optional bool hidden = 3;
+  optional int32 position = 4;
+  optional int64 initial_balance_minor = 5;
+}
+
+message UpdateWalletResponse {
+  Wallet wallet = 1;
+}
+
+message ArchiveWalletRequest {
+  string id = 1;
+}
+
+message ArchiveWalletResponse {}
+
+message DeleteWalletRequest {
+  string id = 1;
+}
+
+message DeleteWalletResponse {}

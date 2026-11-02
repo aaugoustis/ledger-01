@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "google/protobuf/timestamp.proto";
+import "ledger/v1/user.proto";
+
+// A person in the household, or someone who entered rows here and has left (former).
+message Member {
+  string user_id = 1;
+  string email = 2;
+  string name = 3;
+  string avatar_url = 4;
+  // "owner" or "member"; empty for former members.
+  string role = 5;
+  bool former = 6;
+}
+
+// A pending invite, accepted on that email's next sign-in.
+message Invite {
+  string email = 1;
+  google.protobuf.Timestamp created_at = 2;
+  // Whether the deployment's allowlist lets this email sign in at all.
+  bool allowed = 3;
+}
+
+// One household the caller belongs to.
+message HouseholdMembership {
+  string id = 1;
+  string name = 2;
+  string role = 3;
+  int32 member_count = 4;
+  bool active = 5;
+}
+
+// The caller's active household: settings, members and invites. Inviting, cancelling invites,
+// removing members and changing settings are for the owner only (permission_denied otherwise).
+service HouseholdService {
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
+  rpc UpdateHousehold(UpdateHouseholdRequest) returns (UpdateHouseholdResponse);
+  rpc InviteMember(InviteMemberRequest) returns (InviteMemberResponse);
+  rpc CancelInvite(CancelInviteRequest) returns (CancelInviteResponse);
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse);
+  // Members only: the owner can't leave.
+  rpc LeaveHousehold(LeaveHouseholdRequest) returns (LeaveHouseholdResponse);
+  // Every household the caller belongs to.
+  rpc ListHouseholds(ListHouseholdsRequest) returns (ListHouseholdsResponse);
+  // Makes another of the caller's households the active one for all their sessions and MCP tokens.
+  rpc SwitchHousehold(SwitchHouseholdRequest) returns (SwitchHouseholdResponse);
+}
+
+message ListMembersRequest {}
+
+message ListMembersResponse {
+  // Owner first.
+  repeated Member members = 1;
+  repeated Member former_members = 2;
+  repeated Invite invites = 3;
+}
+
+message UpdateHouseholdRequest {
+  optional string name = 1;
+  optional string base_currency = 2;
+}
+
+message UpdateHouseholdResponse {
+  Household household = 1;
+}
+
+message InviteMemberRequest {
+  string email = 1;
+}
+
+message InviteMemberResponse {
+  Invite invite = 1;
+}
+
+message CancelInviteRequest {
+  string email = 1;
+}
+
+message CancelInviteResponse {}
+
+message RemoveMemberRequest {
+  string user_id = 1;
+}
+
+message RemoveMemberResponse {}
+
+message LeaveHouseholdRequest {}
+
+message LeaveHouseholdResponse {}
+
+message ListHouseholdsRequest {}
+
+message ListHouseholdsResponse {
+  repeated HouseholdMembership households = 1;
+}
+
+message SwitchHouseholdRequest {
+  string household_id = 1;
+}
+
+message SwitchHouseholdResponse {}

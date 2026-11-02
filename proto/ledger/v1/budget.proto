@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "ledger/v1/common.proto";
+import "ledger/v1/dashboard.proto";
+import "ledger/v1/transaction.proto";
+
+// Budgets cap expenses over repeating periods. Only expenses count. Amounts in other currencies
+// are converted to the budget's currency with the household's transfer rates, like the
+// dashboard; currencies with no rate are left out and listed in unconverted_currencies.
+//
+// "today" fields are the caller's local calendar date ("YYYY-MM-DD"); the server has no time
+// zone of its own. Empty means today in UTC. Expenses dated after today are upcoming and don't
+// count as spent.
+
+enum BudgetRepeat {
+  BUDGET_REPEAT_UNSPECIFIED = 0;
+  // A single period from start_date to end_date.
+  BUDGET_REPEAT_ONCE = 1;
+  BUDGET_REPEAT_DAILY = 2;
+  BUDGET_REPEAT_WEEKLY = 3;
+  BUDGET_REPEAT_BIWEEKLY = 4;
+  // Periods start on start_date's day of the month (clamped to shorter months).
+  BUDGET_REPEAT_MONTHLY = 5;
+  BUDGET_REPEAT_YEARLY = 6;
+}
+
+message Budget {
+  string id = 1;
+  string name = 2;
+  int64 amount_minor = 3;
+  string currency = 4;
+  BudgetRepeat repeat = 5;
+  string start_date = 6;
+  // Only for BUDGET_REPEAT_ONCE.
+  string end_date = 7;
+  // Empty means every wallet that isn't archived.
+  repeated string wallet_ids = 8;
+  // Empty means every expense category.
+  repeated string category_ids = 9;
+}
+
+enum BudgetState {
+  BUDGET_STATE_UNSPECIFIED = 0;
+  // Today is before the period.
+  BUDGET_STATE_UPCOMING = 1;
+  // Today is inside the period.
+  BUDGET_STATE_ACTIVE = 2;
+  // The period is over.
+  BUDGET_STATE_ENDED = 3;
+}
+
+// Spending in one period of a budget, in the budget's currency.
+message BudgetProgress {
+  DateRange period = 1;
+  BudgetState state = 2;
+  int64 spent_minor = 3;
+  // Budgeted minus spent; negative when over budget.
+  int64 remaining_minor = 4;
+  // Remaining spread over the days left (today included); 0 when nothing is left or the
+  // period is over. Before the period, the whole amount spread over its days.
+  int64 daily_allowance_minor = 5;
+  int32 days_total = 6;
+  // Days from today to the end of the period, today included.
+  int32 days_left = 7;
+}
+
+message BudgetSummary {
+  Budget budget = 1;
+  // The period containing today (the first one if the budget hasn't started, the last one if
+  // a one-time budget is over).
+  BudgetProgress current = 2;
+}
+
+message WalletTotal {
+  string wallet_id = 1;
+  int64 amount_minor = 2;
+  int64 transaction_count = 3;
+}
+
+service BudgetService {
+  rpc ListBudgets(ListBudgetsRequest) returns (ListBudgetsResponse);
+  rpc GetBudget(GetBudgetRequest) returns (GetBudgetResponse);
+  rpc CreateBudget(CreateBudgetRequest) returns (CreateBudgetResponse);
+  // Replaces every field.
+  rpc UpdateBudget(UpdateBudgetRequest) returns (UpdateBudgetResponse);
+  rpc DeleteBudget(DeleteBudgetRequest) returns (DeleteBudgetResponse);
+}
+
+message ListBudgetsRequest {
+  string today = 1;
+}
+
+message ListBudgetsResponse {
+  repeated BudgetSummary budgets = 1;
+  repeated string unconverted_currencies = 2;
+}
+
+message GetBudgetRequest {
+  string id = 1;
+  string today = 2;
+  // Any date in the period to show; empty means the current period.
+  string period_date = 3;
+}
+
+message GetBudgetResponse {
+  Budget budget = 1;
+  BudgetProgress progress = 2;
+  // Periods up to the current one, newest first, at most 60.
+  repeated BudgetProgress history = 3;
+  // Spending in the shown period, largest first.
+  repeated CategoryTotal categories = 4;
+  repeated WalletTotal wallets = 5;
+  // Expenses in the shown period, newest first, at most 200, in their own wallet currencies.
+  repeated Transaction transactions = 6;
+  repeated string unconverted_currencies = 7;
+}
+
+message BudgetInput {
+  string name = 1;
+  int64 amount_minor = 2;
+  string currency = 3;
+  BudgetRepeat repeat = 4;
+  string start_date = 5;
+  string end_date = 6;
+  repeated string wallet_ids = 7;
+  repeated string category_ids = 8;
+}
+
+message CreateBudgetRequest {
+  BudgetInput budget = 1;
+}
+
+message CreateBudgetResponse {
+  Budget budget = 1;
+}
+
+message UpdateBudgetRequest {
+  string id = 1;
+  BudgetInput budget = 2;
+}
+
+message UpdateBudgetResponse {
+  Budget budget = 1;
+}
+
+message DeleteBudgetRequest {
+  string id = 1;
+}
+
+message DeleteBudgetResponse {}

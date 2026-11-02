@@ -1,0 +1,28 @@
+/*
+ * Stylesheet for the design-system artifact build (scripts/build-artifact.ts): the kit's
+ * utilities for the components mirrored into the artifact, WITHOUT Tailwind's preflight, so the
+ * artifact's existing portfolio previews keep their own styles.
+ */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "./tokens.generated.css";
+@import "./kit.css";
+
+@source "../components/amount.tsx";
+@source "../components/button.tsx";
+@source "../components/calendar.tsx";
+@source "../components/category-icon.tsx";
+@source "../components/chart.tsx";
+@source "../components/charts.tsx";
+@source "../components/combobox.tsx";
+@source "../components/multi-combobox.tsx";
+@source "../components/budget-meter.tsx";
+@source "../components/command.tsx";
+@source "../components/date-picker.tsx";
+@source "../components/popover.tsx";
+@source "../components/field.tsx";
+@source "../components/fx-converter.tsx";
+@source "../components/input.tsx";
+@source "../components/label.tsx";
+@source "../components/money-input.tsx";

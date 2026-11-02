@@ -1,0 +1,265 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "google/protobuf/timestamp.proto";
+import "ledger/v1/common.proto";
+
+enum TransactionKind {
+  TRANSACTION_KIND_UNSPECIFIED = 0;
+  TRANSACTION_KIND_EXPENSE = 1;
+  TRANSACTION_KIND_INCOME = 2;
+  TRANSACTION_KIND_TRANSFER_OUT = 3;
+  TRANSACTION_KIND_TRANSFER_IN = 4;
+}
+
+// How often a recurring rule repeats. Month-based frequencies keep the first occurrence's day of
+// the month, clamped to shorter months (the 31st falls on Feb 28); yearly rules on Feb 29 fall on
+// Feb 28 in other years.
+enum RecurringFrequency {
+  RECURRING_FREQUENCY_UNSPECIFIED = 0;
+  RECURRING_FREQUENCY_DAILY = 1;
+  RECURRING_FREQUENCY_EVERY_2_DAYS = 2;
+  // Monday to Friday.
+  RECURRING_FREQUENCY_WEEKDAYS = 3;
+  RECURRING_FREQUENCY_WEEKLY = 4;
+  RECURRING_FREQUENCY_EVERY_2_WEEKS = 5;
+  RECURRING_FREQUENCY_EVERY_4_WEEKS = 6;
+  RECURRING_FREQUENCY_MONTHLY = 7;
+  RECURRING_FREQUENCY_EVERY_2_MONTHS = 8;
+  RECURRING_FREQUENCY_EVERY_3_MONTHS = 9;
+  RECURRING_FREQUENCY_EVERY_6_MONTHS = 10;
+  RECURRING_FREQUENCY_YEARLY = 11;
+}
+
+// A repeat schedule. The first occurrence is the transaction's own date.
+message Recurrence {
+  // UNSPECIFIED means "never": the transaction doesn't repeat.
+  RecurringFrequency frequency = 1;
+  // Optional end: the last date an occurrence may fall on, "YYYY-MM-DD".
+  string end_date = 2;
+  // Optional end instead of end_date: stop after this many occurrences, the first included.
+  // Stored as the date of the last one, so rules read back with end_date set and this at 0.
+  int32 end_count = 3;
+}
+
+// Which occurrences of a recurring rule an edit or delete applies to. Past occurrences (dated on
+// or before the caller's today) are never changed by a series edit, except the one chosen.
+enum OccurrenceScope {
+  // Only the chosen transactions. The default, and the only scope for non-recurring rows.
+  OCCURRENCE_SCOPE_UNSPECIFIED = 0;
+  OCCURRENCE_SCOPE_ONLY_THIS = 1;
+  // The chosen occurrence and every later one that isn't due yet.
+  OCCURRENCE_SCOPE_THIS_AND_FUTURE = 2;
+}
+
+// The other side of a transfer, as seen from one leg.
+message TransferCounterpart {
+  string transfer_id = 1;
+  string wallet_id = 2;
+  string wallet_name = 3;
+  int64 amount_minor = 4;
+  string currency = 5;
+  // Target units per 1 source unit (source = the outgoing wallet).
+  string rate = 6;
+}
+
+message Transaction {
+  string id = 1;
+  string wallet_id = 2;
+  TransactionKind kind = 3;
+  // Set for expenses and income, empty for transfer legs.
+  string category_id = 4;
+  // Always positive, in the wallet's currency.
+  int64 amount_minor = 5;
+  string currency = 6;
+  // "YYYY-MM-DD".
+  string occurred_on = 7;
+  string note = 8;
+  repeated string label_ids = 9;
+  // Set for transfer legs.
+  TransferCounterpart counterpart = 10;
+  string created_by = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  // Set when the row is an occurrence of a recurring rule.
+  string recurring_rule_id = 14;
+  // The rule's schedule, set with recurring_rule_id.
+  Recurrence recurrence = 15;
+}
+
+message Transfer {
+  string id = 1;
+  string from_wallet_id = 2;
+  string to_wallet_id = 3;
+  int64 from_amount_minor = 4;
+  int64 to_amount_minor = 5;
+  string rate = 6;
+  string occurred_on = 7;
+  string note = 8;
+  repeated string label_ids = 9;
+}
+
+// Filters shared by the list and the summary. All set filters must match.
+message TransactionFilter {
+  string wallet_id = 1;
+  DateRange period = 2;
+  repeated string category_ids = 3;
+  // Case-insensitive substring match on the note.
+  string note_query = 4;
+  // Bounds on the absolute amount, in the wallet's minor units.
+  optional int64 min_amount_minor = 5;
+  optional int64 max_amount_minor = 6;
+  // The caller's local date. Rows dated after it are upcoming: they only appear in
+  // ListUpcomingTransactions and never count in totals or balances. Empty means today in UTC.
+  string today = 7;
+  // Rows created by any of these users (household members, or former members who entered rows).
+  repeated string member_ids = 8;
+}
+
+service TransactionService {
+  // Newest first (date, then creation time), up to filter.today. Paginated with opaque page tokens.
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
+  // Rows dated after today (pre-created recurring occurrences and future-dated entries), soonest
+  // first.
+  rpc ListUpcomingTransactions(ListUpcomingTransactionsRequest) returns (ListUpcomingTransactionsResponse);
+  rpc GetPeriodSummary(GetPeriodSummaryRequest) returns (GetPeriodSummaryResponse);
+  rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse);
+  rpc UpdateTransaction(UpdateTransactionRequest) returns (UpdateTransactionResponse);
+  // Deleting either leg of a transfer deletes the whole transfer.
+  rpc DeleteTransactions(DeleteTransactionsRequest) returns (DeleteTransactionsResponse);
+  rpc CreateTransfer(CreateTransferRequest) returns (CreateTransferResponse);
+  rpc UpdateTransfer(UpdateTransferRequest) returns (UpdateTransferResponse);
+}
+
+message ListTransactionsRequest {
+  TransactionFilter filter = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListTransactionsResponse {
+  repeated Transaction transactions = 1;
+  string next_page_token = 2;
+}
+
+message ListUpcomingTransactionsRequest {
+  // One wallet's rows, or every non-archived wallet's when empty. Household-wide, a transfer is
+  // listed once, as its outgoing leg.
+  string wallet_id = 1;
+  string today = 2;
+  // As TransactionFilter.member_ids.
+  repeated string member_ids = 3;
+}
+
+message ListUpcomingTransactionsResponse {
+  // At most 500.
+  repeated Transaction transactions = 1;
+}
+
+message GetPeriodSummaryRequest {
+  TransactionFilter filter = 1;
+}
+
+message GetPeriodSummaryResponse {
+  string currency = 1;
+  // Wallet balance as of filter.today (ignores the other filters).
+  int64 balance_minor = 2;
+  // Net change over the filtered period, transfers included (signed).
+  int64 change_minor = 3;
+  // Sum of filtered expenses (positive number).
+  int64 expenses_minor = 4;
+  // Sum of filtered income.
+  int64 income_minor = 5;
+  int64 transaction_count = 6;
+}
+
+message CreateTransactionRequest {
+  string wallet_id = 1;
+  // EXPENSE or INCOME. Transfers use CreateTransfer.
+  TransactionKind kind = 2;
+  string category_id = 3;
+  int64 amount_minor = 4;
+  string occurred_on = 5;
+  string note = 6;
+  repeated string label_ids = 7;
+  // Makes the transaction the first occurrence of a recurring rule.
+  Recurrence repeat = 8;
+  // The caller's local date: occurrences are created up to three months after it.
+  string today = 9;
+}
+
+message CreateTransactionResponse {
+  Transaction transaction = 1;
+}
+
+// Replaces the editable fields of an expense or income.
+message UpdateTransactionRequest {
+  string id = 1;
+  string category_id = 2;
+  int64 amount_minor = 3;
+  string occurred_on = 4;
+  string note = 5;
+  repeated string label_ids = 6;
+  // For an occurrence of a recurring rule. THIS_AND_FUTURE also replaces the rule's schedule with
+  // repeat (frequency UNSPECIFIED ends the series at this occurrence).
+  OccurrenceScope scope = 7;
+  // On a row that isn't recurring, a frequency makes it the first occurrence of a new rule.
+  Recurrence repeat = 8;
+  string today = 9;
+}
+
+message UpdateTransactionResponse {
+  Transaction transaction = 1;
+}
+
+message DeleteTransactionsRequest {
+  repeated string ids = 1;
+  // THIS_AND_FUTURE also ends each chosen occurrence's rule and deletes its later occurrences
+  // that aren't due yet.
+  OccurrenceScope scope = 2;
+  string today = 3;
+}
+
+message DeleteTransactionsResponse {
+  int64 deleted_count = 1;
+}
+
+message CreateTransferRequest {
+  string from_wallet_id = 1;
+  string to_wallet_id = 2;
+  int64 from_amount_minor = 3;
+  int64 to_amount_minor = 4;
+  // Required when currencies differ; "1" otherwise.
+  string rate = 5;
+  string occurred_on = 6;
+  string note = 7;
+  repeated string label_ids = 8;
+  // Makes the transfer the first occurrence of a recurring rule (each occurrence has two legs).
+  Recurrence repeat = 9;
+  string today = 10;
+}
+
+message CreateTransferResponse {
+  Transfer transfer = 1;
+}
+
+message UpdateTransferRequest {
+  string id = 1;
+  string from_wallet_id = 2;
+  string to_wallet_id = 3;
+  int64 from_amount_minor = 4;
+  int64 to_amount_minor = 5;
+  string rate = 6;
+  string occurred_on = 7;
+  string note = 8;
+  repeated string label_ids = 9;
+  // Same as on UpdateTransactionRequest.
+  OccurrenceScope scope = 10;
+  Recurrence repeat = 11;
+  string today = 12;
+}
+
+message UpdateTransferResponse {
+  Transfer transfer = 1;
+}

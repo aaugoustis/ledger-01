@@ -1,0 +1,21 @@
+# Local development services. Only Postgres: the app itself runs on the host (task dev).
+services:
+  db:
+    image: postgres:18.6-alpine
+    environment:
+      POSTGRES_USER: ledger
+      POSTGRES_PASSWORD: ledger
+      POSTGRES_DB: ledger
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      # Postgres 18+ images keep PGDATA in a versioned subdirectory of this path.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ledger -d ledger"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  pgdata:

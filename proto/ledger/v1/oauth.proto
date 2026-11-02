@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// OAuthService backs the pages around the MCP authorization server: the consent page an MCP client
+// (such as Claude) sends the user to, and the list of connected apps in settings. The OAuth
+// protocol endpoints themselves (/oauth/*, /.well-known/*) are plain HTTP, as the spec requires.
+service OAuthService {
+  // A pending authorization request, for the consent page.
+  rpc GetAuthorizationRequest(GetAuthorizationRequestRequest) returns (GetAuthorizationRequestResponse);
+  // Grants access and returns where to send the browser (the client's redirect URI with a code).
+  rpc ApproveAuthorization(ApproveAuthorizationRequest) returns (ApproveAuthorizationResponse);
+  // Refuses access and returns where to send the browser (the client's redirect URI with an error).
+  rpc DenyAuthorization(DenyAuthorizationRequest) returns (DenyAuthorizationResponse);
+  // Apps the caller has granted access to and not revoked.
+  rpc ListConnections(ListConnectionsRequest) returns (ListConnectionsResponse);
+  // Revokes a grant and every token issued under it.
+  rpc RevokeConnection(RevokeConnectionRequest) returns (RevokeConnectionResponse);
+}
+
+message AuthorizationRequest {
+  string id = 1;
+  // As the client registered itself; untrusted, shown with the redirect host.
+  string client_name = 2;
+  // Host of the redirect URI, e.g. "claude.ai".
+  string redirect_host = 3;
+  // Space-separated OAuth scopes, e.g. "ledger:read".
+  string scope = 4;
+}
+
+message Connection {
+  string id = 1;
+  string client_name = 2;
+  string redirect_host = 3;
+  string scope = 4;
+  google.protobuf.Timestamp created_at = 5;
+  // Unset until the app first uses its access.
+  google.protobuf.Timestamp last_used_at = 6;
+}
+
+message GetAuthorizationRequestRequest {
+  string id = 1;
+}
+
+message GetAuthorizationRequestResponse {
+  AuthorizationRequest request = 1;
+}
+
+message ApproveAuthorizationRequest {
+  string id = 1;
+}
+
+message ApproveAuthorizationResponse {
+  string redirect_url = 1;
+}
+
+message DenyAuthorizationRequest {
+  string id = 1;
+}
+
+message DenyAuthorizationResponse {
+  string redirect_url = 1;
+}
+
+message ListConnectionsRequest {}
+
+message ListConnectionsResponse {
+  repeated Connection connections = 1;
+}
+
+message RevokeConnectionRequest {
+  string id = 1;
+}
+
+message RevokeConnectionResponse {}

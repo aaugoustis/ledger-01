@@ -1,0 +1,22 @@
+<!-- @dsCard group="Data" height=300 subtitle="Balance, cash flow and category shares" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<div id="root" style="display:grid;grid-template-columns:1fr 1fr 320px;gap:24px;align-items:center"></div>
+<script>
+  var M = window.Module01, h = React.createElement, money = { currency: 'USD', minorUnits: 2 };
+  var days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+  var bal = [1200000,1196000,1190500,1190500,1310500,1298000,1281000,1275000,1275000,1262000,1250000,1244000,1239000,1232000];
+  var flow = days.map(function (d, i) { return { label: 'Oct ' + d, tooltipLabel: 'Oct ' + d + ', 2026', income: BigInt(i === 4 ? 120000 : 0), expense: BigInt([0,4000,5500,0,0,12500,17000,6000,0,13000,12000,6000,5000,7000][i]) }; });
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.BalanceChart, { money: money, points: days.map(function (d, i) { return { label: 'Oct ' + d, tooltipLabel: 'Oct ' + d + ', 2026', balance: BigInt(bal[i]) }; }) }),
+    h(M.FlowChart, { money: money, points: flow }),
+    h(M.DonutChart, { money: money, centerLabel: 'Spent', slices: [
+      { key: 'g', label: 'Groceries', icon: 'shopping-cart', color: 'cat-amber', amount: BigInt(41000) },
+      { key: 'r', label: 'Restaurants', icon: 'utensils', color: 'cat-red', amount: BigInt(23500) },
+      { key: 't', label: 'Transport', icon: 'bus', color: 'cat-sky', amount: BigInt(12000) },
+      { key: 'h', label: 'Home', icon: 'house', color: 'cat-teal', amount: BigInt(11500) } ] })));
+</script>
+</body>
+</html>

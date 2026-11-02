@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@ledger-01/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "scripts"]
+}

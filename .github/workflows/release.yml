@@ -1,0 +1,56 @@
+name: Release
+
+# Runs in the public repository only (not in forks or private copies). While changesets are pending
+# it keeps a "Version packages" PR open; once that PR is merged, it tags v<version> and publishes a
+# GitHub release from the changelogs. Run it by hand to release the version already in
+# package.json, such as v1.0.0 on the initial commit.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Version PR or release
+    if: github.repository_owner == 'franco-roura' && !github.event.repository.private
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+
+      # A PR opened with the default token doesn't trigger CI, and main requires CI to pass, so
+      # RELEASE_TOKEN (a fine-grained PAT or GitHub App token) is used when it's set.
+      - name: Version PR
+        id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: bun run release:version
+          commit-message: Version packages
+          pr-title: Version packages
+          github-token: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+      - name: Tag and release
+        if: steps.changesets.outputs.has-changesets == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version apps/web/package.json)
+          tag="v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "$tag is already released"
+            exit 0
+          fi
+          bash .github/scripts/release-notes.sh "$version" > "$RUNNER_TEMP/notes.md"
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file "$RUNNER_TEMP/notes.md"
+          echo "Released $tag" >> "$GITHUB_STEP_SUMMARY"

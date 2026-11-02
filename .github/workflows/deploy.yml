@@ -1,0 +1,63 @@
+name: Deploy
+
+# Run by hand: Actions > Deploy > Run workflow. Deploys to AWS with SST from Linux (OpenNext
+# doesn't support Windows). Setup is in the README, "Deploy to AWS":
+#   - repository variable AWS_DEPLOY_ROLE_ARN (from infra/github-deploy-role.yml), optional AWS_REGION
+#   - GitHub environment "production" with the secrets listed below
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # OIDC: trade the job's token for short-lived AWS credentials.
+  id-token: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  STAGE: production
+
+jobs:
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'sa-east-1' }}
+          # Logs are public on a public repository; keep the account ID out of them.
+          mask-aws-account-id: true
+
+      # GitHub is the source of truth for secrets; copy them into SST before every deploy.
+      - name: Set SST secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
+        run: |
+          bun x sst secret set DatabaseUrl "$DATABASE_URL" --stage "$STAGE"
+          bun x sst secret set GoogleClientId "$GOOGLE_CLIENT_ID" --stage "$STAGE"
+          bun x sst secret set GoogleClientSecret "$GOOGLE_CLIENT_SECRET" --stage "$STAGE"
+          bun x sst secret set AllowedEmails "$ALLOWED_EMAILS" --stage "$STAGE"
+
+      # Builds the Go bootstraps (task build:lambda) and the Next.js app, runs migrations, deploys.
+      - name: sst deploy
+        run: bun x sst deploy --stage "$STAGE"
+
+      - name: Summary
+        if: success()
+        run: |
+          if [ -f .sst/outputs.json ]; then
+            url=$(jq -r '.url // empty' .sst/outputs.json)
+            [ -n "$url" ] && echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+          fi

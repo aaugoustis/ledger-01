@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "ledger/v1/common.proto";
+import "ledger/v1/transaction.proto";
+
+// Household-wide reports in the user's base currency, or a requested one. Amounts in other
+// currencies are converted with the household's own transfer rates (latest transfer between the
+// two currencies on or before the date, else the earliest after it); currencies with no such
+// transfer are left out and listed in unconverted_currencies.
+//
+// Rows dated after the request's today (the caller's local date; empty means today in UTC) are
+// upcoming and left out of every total, balance and rate.
+
+enum Bucket {
+  BUCKET_UNSPECIFIED = 0;
+  BUCKET_DAY = 1;
+  BUCKET_WEEK = 2;
+  BUCKET_MONTH = 3;
+}
+
+message DashboardFilter {
+  DateRange period = 1;
+  // Empty means every visible (not hidden, not archived) wallet.
+  repeated string wallet_ids = 2;
+  // Narrows income/expense flows; balances ignore it.
+  repeated string category_ids = 3;
+  // Case-insensitive substring match on the note. Narrows flows (transfers included); balances
+  // ignore it.
+  string note_query = 4;
+  // Bounds on each row's amount converted to the report currency, in its minor units. Narrow
+  // flows (transfers included); balances ignore them.
+  optional int64 min_amount_minor = 5;
+  optional int64 max_amount_minor = 6;
+}
+
+message SeriesPoint {
+  // First day of the bucket, "YYYY-MM-DD".
+  string date = 1;
+  // Balance at the end of the bucket.
+  int64 balance_minor = 2;
+  int64 income_minor = 3;
+  // Positive number.
+  int64 expense_minor = 4;
+}
+
+message CategoryTotal {
+  string category_id = 1;
+  int64 amount_minor = 2;
+  int64 transaction_count = 3;
+}
+
+service DashboardService {
+  rpc GetDashboard(GetDashboardRequest) returns (GetDashboardResponse);
+  rpc GetCategoryReport(GetCategoryReportRequest) returns (GetCategoryReportResponse);
+}
+
+message GetDashboardRequest {
+  DashboardFilter filter = 1;
+  Bucket bucket = 2;
+  string today = 3;
+  // Report currency (ISO 4217); empty means the user's base currency. A wallet's overview
+  // reports in the wallet's own currency.
+  string currency = 4;
+}
+
+message GetDashboardResponse {
+  // Base currency of the report.
+  string currency = 1;
+  // Balance of the selected wallets at the end of the period.
+  int64 balance_minor = 2;
+  // Net change over the period, transfers included.
+  int64 change_minor = 3;
+  int64 expenses_minor = 4;
+  int64 income_minor = 5;
+  repeated SeriesPoint series = 6;
+  // Largest first.
+  repeated CategoryTotal expense_categories = 7;
+  repeated CategoryTotal income_categories = 8;
+  int64 transfers_in_minor = 9;
+  int64 transfers_out_minor = 10;
+  int64 transfers_in_count = 11;
+  int64 transfers_out_count = 12;
+  repeated string unconverted_currencies = 13;
+}
+
+message GetCategoryReportRequest {
+  string category_id = 1;
+  DashboardFilter filter = 2;
+  Bucket bucket = 3;
+  string today = 4;
+  // Same as GetDashboardRequest.currency.
+  string currency = 5;
+}
+
+message GetCategoryReportResponse {
+  string currency = 1;
+  int64 total_minor = 2;
+  int64 transaction_count = 3;
+  int64 average_minor = 4;
+  // Weekday with the most transactions: 0 = Sunday … 6 = Saturday, -1 if none.
+  int32 busiest_weekday = 5;
+  // income_minor or expense_minor is filled, by the category's kind.
+  repeated SeriesPoint series = 6;
+  // Newest first, at most 200, in their own wallet currencies.
+  repeated Transaction transactions = 7;
+  repeated string unconverted_currencies = 8;
+}

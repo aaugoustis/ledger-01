@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+service BackupService {
+  // The household's whole ledger as one gzipped JSON file (format "ledger-01-backup"): wallets,
+  // categories, labels, transactions, transfers, budgets, recurring rules and import settings.
+  // Users, sessions and connected apps aren't included.
+  rpc ExportBackup(ExportBackupRequest) returns (ExportBackupResponse);
+  // Replaces the household's whole ledger with a backup's, in one database transaction. The
+  // file is checked first; nothing is deleted when it's rejected.
+  rpc RestoreBackup(RestoreBackupRequest) returns (RestoreBackupResponse);
+  // Transactions as CSV (UTF-8 with a BOM), oldest first. Upcoming rows are left out.
+  rpc ExportTransactionsCsv(ExportTransactionsCsvRequest) returns (ExportTransactionsCsvResponse);
+}
+
+message ExportBackupRequest {}
+
+message ExportBackupResponse {
+  bytes content = 1;
+  // e.g. "ledger-01-backup-2026-10-31.json.gz".
+  string file_name = 2;
+}
+
+message RestoreBackupRequest {
+  // A file from ExportBackup, gzipped or not. At most 5 MB.
+  bytes content = 1;
+  // Must be true: the household's current ledger is deleted.
+  bool replace = 2;
+}
+
+// What the backup held, now in the household.
+message BackupCounts {
+  int32 wallets = 1;
+  int32 categories = 2;
+  int32 labels = 3;
+  int32 transactions = 4;
+  int32 transfers = 5;
+  int32 budgets = 6;
+  int32 recurring_rules = 7;
+  int32 import_rules = 8;
+}
+
+message RestoreBackupResponse {
+  BackupCounts counts = 1;
+}
+
+message ExportTransactionsCsvRequest {
+  // The caller's local date; rows after it are upcoming and left out.
+  string today = 1;
+  // Optional inclusive bounds, "YYYY-MM-DD".
+  optional string from = 2;
+  optional string to = 3;
+  // Empty means every wallet.
+  repeated string wallet_ids = 4;
+}
+
+message ExportTransactionsCsvResponse {
+  bytes content = 1;
+  string file_name = 2;
+  int32 row_count = 3;
+}

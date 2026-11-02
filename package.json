@@ -1,0 +1,25 @@
+{
+  "name": "ledger-01",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "gen:proto": "buf generate",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "changeset": "changeset",
+    "release:version": "changeset version && bun install --lockfile-only && biome format --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@bufbuild/buf": "1.75.0",
+    "@bufbuild/protoc-gen-es": "2.16.0",
+    "@changesets/changelog-github": "1.0.1",
+    "@changesets/cli": "3.0.3",
+    "sst": "4.17.2",
+    "typescript": "7.0.2"
+  }
+}

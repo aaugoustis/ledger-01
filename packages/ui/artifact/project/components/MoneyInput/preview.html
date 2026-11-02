@@ -1,0 +1,19 @@
+<!-- @dsCard group="Forms" height=110 subtitle="Default, filled and invalid" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<div id="root" class="m1-row"></div>
+<script>
+  var M = window.Module01, h = React.createElement;
+  function Demo(p) {
+    var s = React.useState(p.initial || '');
+    return h('div', { style: { width: 220 } }, h(M.MoneyInput, { currency: p.currency, value: s[0], onChange: function (e) { s[1](e.target.value); }, 'aria-invalid': p.invalid }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(Demo, { currency: 'USD' }),
+    h(Demo, { currency: 'UYU', initial: '4700.00' }),
+    h(Demo, { currency: 'USD', initial: '1.234', invalid: true })));
+</script>
+</body>
+</html>

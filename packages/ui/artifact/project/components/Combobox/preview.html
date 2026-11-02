@@ -1,0 +1,31 @@
+<!-- @dsCard group="Forms" height=150 subtitle="Pick a category: focus moves on to Amount" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<form id="root" class="m1-row" style="align-items: flex-start" onsubmit="return false"></form>
+<script>
+  var M = window.Module01, h = React.createElement;
+  var cats = [
+    { id: 'food', name: 'Food & Drink', icon: 'utensils', color: 'cat-orange' },
+    { id: 'groceries', name: 'Groceries', icon: 'shopping-cart', color: 'cat-amber' },
+    { id: 'transport', name: 'Transport', icon: 'bus', color: 'cat-yellow' },
+    { id: 'home', name: 'Home', icon: 'house', color: 'cat-brown' },
+    { id: 'health', name: 'Healthcare', icon: 'heart-pulse', color: 'cat-red' }
+  ];
+  function Demo() {
+    var c = React.useState(''), a = React.useState('');
+    return h(React.Fragment, null,
+      h('div', { style: { width: 240 } }, h(M.Field, { label: 'Category', htmlFor: 'cb' },
+        h(M.Combobox, {
+          id: 'cb', value: c[0], onChange: c[1], options: cats, placeholder: 'Choose a category',
+          getKey: function (o) { return o.id; }, getSearchText: function (o) { return o.name; },
+          renderOption: function (o) { return h(React.Fragment, null, h(M.CategoryIcon, { icon: o.icon, color: o.color, size: 'sm' }), h('span', null, o.name)); }
+        }))),
+      h('div', { style: { width: 200 } }, h(M.Field, { label: 'Amount', htmlFor: 'am' },
+        h(M.MoneyInput, { id: 'am', currency: 'USD', value: a[0], onChange: function (e) { a[1](e.target.value); } }))));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

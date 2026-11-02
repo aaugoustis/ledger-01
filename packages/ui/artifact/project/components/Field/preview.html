@@ -1,0 +1,26 @@
+<!-- @dsCard group="Forms" height=170 subtitle="Label, well, help, and fault feedback (press Trigger fault)" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>preview</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Michroma&family=Space+Mono:wght@400;700&display=swap"></head>
+<body>
+<div id="root" class="m1-row" style="align-items: flex-start"></div>
+<script>
+  var M = window.Module01, h = React.createElement;
+  function Demo() {
+    var s = React.useState(''), err = React.useState(null);
+    function trigger() {
+      err[1]('Enter an amount');
+      M.fault('f3');
+    }
+    return h(React.Fragment, null,
+      h('div', { style: { width: 240 } }, h(M.Field, { label: 'Note (optional)', htmlFor: 'f1', help: 'Bank descriptions land here.' }, h(M.TextInput, { id: 'f1', placeholder: 'Write a note' }))),
+      h('div', { style: { width: 240 } }, h(M.Field, { label: 'Wallet name', htmlFor: 'f2', error: 'Must be 1-60 characters' }, h(M.TextInput, { id: 'f2', 'aria-invalid': true, defaultValue: '' }))),
+      h('div', { style: { width: 240, display: 'flex', flexDirection: 'column', gap: 12 } },
+        h(M.Field, { label: 'Amount', htmlFor: 'f3', error: err[0] },
+          h(M.MoneyInput, { id: 'f3', currency: 'USD', value: s[0], onChange: function (e) { s[1](e.target.value); err[1](null); } })),
+        h(M.Button, { variant: 'secondary', onClick: trigger }, 'Trigger fault')));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

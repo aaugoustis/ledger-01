@@ -1,0 +1,237 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1040" width="1600" height="1040">
+  <title>Ledger/01 deployment map with monthly costs</title>
+  <!-- Ledger/01 deployment map (sst.config.ts). Colors are packages/ui tokens; logos are Simple Icons (CC0)
+       and Lucide (ISC). Render with `task docs:render`. -->
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700&amp;family=Michroma&amp;family=Space+Mono:wght@400;700&amp;display=block');
+      .disp { font-family: 'Michroma', sans-serif; }
+      .name { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 17px; fill: #1c1e21; }
+      .sub { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.12em; fill: #53575e; }
+      .hud { font-family: 'Space Mono', monospace; letter-spacing: 0.12em; }
+      .cost { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 11px; fill: #1c1e21; }
+    </style>
+    <filter id="mold" x="-10%" y="-10%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1c1e21" flood-opacity="0.06"/>
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#1c1e21" flood-opacity="0.08"/>
+    </filter>
+    <marker id="head-soft" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#53575e"/>
+    </marker>
+    <marker id="head-mark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7c818a"/>
+    </marker>
+  </defs>
+  <path d="M36 0 H1556 L1600 44 V1004 Q1600 1040 1564 1040 H36 Q0 1040 0 1004 V36 Q0 0 36 0 Z" fill="#f3f4f6" stroke="#c9ccd2" stroke-width="2"/>
+  <text x="60" y="62" class="hud" font-size="13" fill="#7c818a" text-anchor="start">LEDGER/01 · DEPLOYMENT MAP · SA-EAST-1</text>
+  <text x="60" y="108" class="disp" font-size="30" fill="#1c1e21">What you host, and what it costs</text>
+  <path d="M1060 98 H1110" stroke="#53575e" stroke-width="2.5" marker-end="url(#head-soft)"/>
+  <text x="1122" y="103" class="hud" font-size="12" fill="#53575e" text-anchor="start">REQUEST</text>
+  <path d="M1230 98 H1280" stroke="#7c818a" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#head-mark)"/>
+  <text x="1292" y="103" class="hud" font-size="12" fill="#53575e" text-anchor="start">SCHEDULE / DEPLOY</text>
+  <text x="52" y="200" class="hud" font-size="12" fill="#7c818a" text-anchor="start">YOUR DEVICES</text>
+  <path d="M364 150 H1206 L1240 184 V956 Q1240 980 1216 980 H364 Q340 980 340 956 V174 Q340 150 364 150 Z" fill="#e7e9ec" fill-opacity="0.6" stroke="#c9ccd2" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
+  <text x="366" y="200" class="hud" font-size="12" fill="#7c818a" text-anchor="start">YOUR AWS ACCOUNT · SERVERLESS</text>
+  <text x="1306" y="200" class="hud" font-size="12" fill="#7c818a" text-anchor="start">HOSTED ELSEWHERE</text>
+  <g transform="translate(52 250)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></g></g>
+    <text x="76" y="38" class="name">Browser</text>
+    <text x="76" y="58" class="sub">WEB APP · SSR</text>
+    <g transform="translate(76 68)">
+      <rect width="30" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0</text>
+    </g>
+  </g>
+  <g transform="translate(52 400)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></g></g>
+    <text x="76" y="38" class="name">Phone</text>
+    <text x="76" y="58" class="sub">INSTALLED PWA</text>
+    <g transform="translate(76 68)">
+      <rect width="30" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0</text>
+    </g>
+  </g>
+  <g transform="translate(52 550)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">Claude</text>
+    <text x="76" y="58" class="sub">MCP · READ-ONLY</text>
+    <g transform="translate(76 68)">
+      <rect width="30" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0</text>
+    </g>
+  </g>
+  <g transform="translate(52 820)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="M10.984 13.836a.5.5 0 0 1-.353-.146l-.745-.743a.5.5 0 1 1 .706-.708l.392.391 1.181-1.18a.5.5 0 0 1 .708.707l-1.535 1.533a.504.504 0 0 1-.354.146zm9.353-.147l1.534-1.532a.5.5 0 0 0-.707-.707l-1.181 1.18-.392-.391a.5.5 0 1 0-.706.708l.746.743a.497.497 0 0 0 .706-.001zM4.527 7.452l2.557-1.585A1 1 0 0 0 7.09 4.17L4.533 2.56A1 1 0 0 0 3 3.406v3.196a1.001 1.001 0 0 0 1.527.85zm2.03-2.436L4 6.602V3.406l2.557 1.61zM24 12.5c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3h-2.08a3.503 3.503 0 0 1-3.46 3 3.502 3.502 0 0 1-3.46-3h-.558c-.972 0-1.85-.399-2.482-1.042V17c0 1.654 1.346 3 3 3h.04c.244-1.693 1.7-3 3.46-3 1.93 0 3.5 1.57 3.5 3.5S13.43 24 11.5 24a3.502 3.502 0 0 1-3.46-3H8c-2.206 0-4-1.794-4-4V9.899A5.008 5.008 0 0 1 0 5c0-2.757 2.243-5 5-5s5 2.243 5 5a5.005 5.005 0 0 1-4.952 4.998A2.482 2.482 0 0 0 7.482 12h.558c.244-1.693 1.7-3 3.46-3a3.502 3.502 0 0 1 3.46 3h2.08a3.503 3.503 0 0 1 3.46-3c1.93 0 3.5 1.57 3.5 3.5zm-15 8c0 1.378 1.122 2.5 2.5 2.5s2.5-1.122 2.5-2.5-1.122-2.5-2.5-2.5S9 19.122 9 20.5zM5 9c2.206 0 4-1.794 4-4S7.206 1 5 1 1 2.794 1 5s1.794 4 4 4zm9 3.5c0-1.378-1.122-2.5-2.5-2.5S9 11.122 9 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm9 0c0-1.378-1.122-2.5-2.5-2.5S18 11.122 18 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm-13 8a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm2 0a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm12 0c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3.002c-.007.001-.013.005-.021.005l-.506.017h-.017a.5.5 0 0 1-.016-.999l.506-.017c.018-.002.035.006.052.007A3.503 3.503 0 0 1 20.5 17c1.93 0 3.5 1.57 3.5 3.5zm-1 0c0-1.378-1.122-2.5-2.5-2.5S18 19.122 18 20.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">GitHub Actions</text>
+    <text x="76" y="58" class="sub">DEPLOY WORKFLOW</text>
+    <g transform="translate(76 68)">
+      <rect width="30" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0</text>
+    </g>
+  </g>
+  <g transform="translate(366 380)">
+    <rect width="236" height="150" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></g></g>
+    <text x="76" y="38" class="name">CloudFront</text>
+    <text x="76" y="58" class="sub">ROUTER · CDN</text>
+    <g transform="translate(76 68)">
+      <rect width="125" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 always free</text>
+    </g>
+  <text x="14" y="116" class="hud" font-size="10.5" fill="#53575e" text-anchor="start">/api /auth /mcp /oauth → API</text>
+  <text x="14" y="136" class="hud" font-size="10.5" fill="#53575e" text-anchor="start">everything else → web</text>
+  </g>
+  <g transform="translate(666 230)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="M18.665 21.978C16.758 23.255 14.465 24 12 24 5.377 24 0 18.623 0 12S5.377 0 12 0s12 5.377 12 12c0 3.583-1.574 6.801-4.067 9.001L9.219 7.2H7.2v9.596h1.615V9.251l9.85 12.727Zm-3.332-8.533 1.6 2.061V7.2h-1.6v6.245Z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">Next.js web</text>
+    <text x="76" y="58" class="sub">OPENNEXT · LAMBDA</text>
+    <g transform="translate(76 68)">
+      <rect width="109" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 free tier</text>
+    </g>
+  </g>
+  <g transform="translate(966 230)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></g></g>
+    <text x="76" y="38" class="name">S3</text>
+    <text x="76" y="58" class="sub">STATIC ASSETS</text>
+    <g transform="translate(76 68)">
+      <rect width="69" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">&lt; $0.01</text>
+    </g>
+  </g>
+  <g transform="translate(966 370)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g></g>
+    <text x="76" y="38" class="name">SQS + DynamoDB</text>
+    <text x="76" y="58" class="sub">ISR REVALIDATION</text>
+    <g transform="translate(76 68)">
+      <rect width="125" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 always free</text>
+    </g>
+  </g>
+  <g transform="translate(666 540)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="m10.586 5.414-5.172 5.172"/><path d="m18.586 13.414-5.172 5.172"/><path d="M6 12h12"/><circle cx="12" cy="20" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="4" cy="12" r="2"/></g></g>
+    <text x="76" y="38" class="name">API Gateway</text>
+    <text x="76" y="58" class="sub">HTTP API</text>
+    <g transform="translate(76 68)">
+      <rect width="69" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">≈ $0.05</text>
+    </g>
+  </g>
+  <g transform="translate(966 540)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="M1.811 10.231c-.047 0-.058-.023-.035-.059l.246-.315c.023-.035.081-.058.128-.058h4.172c.046 0 .058.035.035.07l-.199.303c-.023.036-.082.07-.117.07zM.047 11.306c-.047 0-.059-.023-.035-.058l.245-.316c.023-.035.082-.058.129-.058h5.328c.047 0 .07.035.058.07l-.093.28c-.012.047-.058.07-.105.07zm2.828 1.075c-.047 0-.059-.035-.035-.07l.163-.292c.023-.035.07-.07.117-.07h2.337c.047 0 .07.035.07.082l-.023.28c0 .047-.047.082-.082.082zm12.129-2.36c-.736.187-1.239.327-1.963.514-.176.046-.187.058-.34-.117-.174-.199-.303-.327-.548-.444-.737-.362-1.45-.257-2.115.175-.795.514-1.204 1.274-1.192 2.22.011.935.654 1.706 1.577 1.835.795.105 1.46-.175 1.987-.77.105-.13.198-.27.315-.434H10.47c-.245 0-.304-.152-.222-.35.152-.362.432-.97.596-1.274a.315.315 0 01.292-.187h4.253c-.023.316-.023.631-.07.947a4.983 4.983 0 01-.958 2.29c-.841 1.11-1.94 1.8-3.33 1.986-1.145.152-2.209-.07-3.143-.77-.865-.655-1.356-1.52-1.484-2.595-.152-1.274.222-2.419.993-3.424.83-1.086 1.928-1.776 3.272-2.02 1.098-.2 2.15-.07 3.096.571.62.41 1.063.97 1.356 1.648.07.105.023.164-.117.2m3.868 6.461c-1.064-.024-2.034-.328-2.852-1.029a3.665 3.665 0 01-1.262-2.255c-.21-1.32.152-2.489.947-3.529.853-1.122 1.881-1.706 3.272-1.95 1.192-.21 2.314-.095 3.33.595.923.63 1.496 1.484 1.648 2.605.198 1.578-.257 2.863-1.344 3.962-.771.783-1.718 1.273-2.805 1.495-.315.06-.63.07-.934.106zm2.78-4.72c-.011-.153-.011-.27-.034-.387-.21-1.157-1.274-1.81-2.384-1.554-1.087.245-1.788.935-2.045 2.033-.21.912.234 1.835 1.075 2.21.643.28 1.285.244 1.905-.07.923-.48 1.425-1.228 1.484-2.233z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">Go API</text>
+    <text x="76" y="58" class="sub">CONNECT · LAMBDA</text>
+    <g transform="translate(76 68)">
+      <rect width="109" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 free tier</text>
+    </g>
+  </g>
+  <g transform="translate(666 690)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v3"/><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338"/><path d="M3 9h5.859"/><path d="M8 2v3"/><circle cx="16" cy="16" r="6"/></g></g>
+    <text x="76" y="38" class="name">EventBridge</text>
+    <text x="76" y="58" class="sub">DAILY SCHEDULE</text>
+    <g transform="translate(76 68)">
+      <rect width="125" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 always free</text>
+    </g>
+  </g>
+  <g transform="translate(966 690)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="M1.811 10.231c-.047 0-.058-.023-.035-.059l.246-.315c.023-.035.081-.058.128-.058h4.172c.046 0 .058.035.035.07l-.199.303c-.023.036-.082.07-.117.07zM.047 11.306c-.047 0-.059-.023-.035-.058l.245-.316c.023-.035.082-.058.129-.058h5.328c.047 0 .07.035.058.07l-.093.28c-.012.047-.058.07-.105.07zm2.828 1.075c-.047 0-.059-.035-.035-.07l.163-.292c.023-.035.07-.07.117-.07h2.337c.047 0 .07.035.07.082l-.023.28c0 .047-.047.082-.082.082zm12.129-2.36c-.736.187-1.239.327-1.963.514-.176.046-.187.058-.34-.117-.174-.199-.303-.327-.548-.444-.737-.362-1.45-.257-2.115.175-.795.514-1.204 1.274-1.192 2.22.011.935.654 1.706 1.577 1.835.795.105 1.46-.175 1.987-.77.105-.13.198-.27.315-.434H10.47c-.245 0-.304-.152-.222-.35.152-.362.432-.97.596-1.274a.315.315 0 01.292-.187h4.253c-.023.316-.023.631-.07.947a4.983 4.983 0 01-.958 2.29c-.841 1.11-1.94 1.8-3.33 1.986-1.145.152-2.209-.07-3.143-.77-.865-.655-1.356-1.52-1.484-2.595-.152-1.274.222-2.419.993-3.424.83-1.086 1.928-1.776 3.272-2.02 1.098-.2 2.15-.07 3.096.571.62.41 1.063.97 1.356 1.648.07.105.023.164-.117.2m3.868 6.461c-1.064-.024-2.034-.328-2.852-1.029a3.665 3.665 0 01-1.262-2.255c-.21-1.32.152-2.489.947-3.529.853-1.122 1.881-1.706 3.272-1.95 1.192-.21 2.314-.095 3.33.595.923.63 1.496 1.484 1.648 2.605.198 1.578-.257 2.863-1.344 3.962-.771.783-1.718 1.273-2.805 1.495-.315.06-.63.07-.934.106zm2.78-4.72c-.011-.153-.011-.27-.034-.387-.21-1.157-1.274-1.81-2.384-1.554-1.087.245-1.788.935-2.045 2.033-.21.912.234 1.835 1.075 2.21.643.28 1.285.244 1.905-.07.923-.48 1.425-1.228 1.484-2.233z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">Jobs</text>
+    <text x="76" y="58" class="sub">DAILY · LAMBDA</text>
+    <g transform="translate(76 68)">
+      <rect width="109" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 free tier</text>
+    </g>
+  </g>
+  <g transform="translate(366 820)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><g fill="none" stroke="#1c1e21" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></g></g>
+    <text x="76" y="38" class="name">Deploy role</text>
+    <text x="76" y="58" class="sub">GITHUB OIDC · SST</text>
+    <g transform="translate(76 68)">
+      <rect width="30" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0</text>
+    </g>
+  </g>
+  <g transform="translate(666 820)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="M1.811 10.231c-.047 0-.058-.023-.035-.059l.246-.315c.023-.035.081-.058.128-.058h4.172c.046 0 .058.035.035.07l-.199.303c-.023.036-.082.07-.117.07zM.047 11.306c-.047 0-.059-.023-.035-.058l.245-.316c.023-.035.082-.058.129-.058h5.328c.047 0 .07.035.058.07l-.093.28c-.012.047-.058.07-.105.07zm2.828 1.075c-.047 0-.059-.035-.035-.07l.163-.292c.023-.035.07-.07.117-.07h2.337c.047 0 .07.035.07.082l-.023.28c0 .047-.047.082-.082.082zm12.129-2.36c-.736.187-1.239.327-1.963.514-.176.046-.187.058-.34-.117-.174-.199-.303-.327-.548-.444-.737-.362-1.45-.257-2.115.175-.795.514-1.204 1.274-1.192 2.22.011.935.654 1.706 1.577 1.835.795.105 1.46-.175 1.987-.77.105-.13.198-.27.315-.434H10.47c-.245 0-.304-.152-.222-.35.152-.362.432-.97.596-1.274a.315.315 0 01.292-.187h4.253c-.023.316-.023.631-.07.947a4.983 4.983 0 01-.958 2.29c-.841 1.11-1.94 1.8-3.33 1.986-1.145.152-2.209-.07-3.143-.77-.865-.655-1.356-1.52-1.484-2.595-.152-1.274.222-2.419.993-3.424.83-1.086 1.928-1.776 3.272-2.02 1.098-.2 2.15-.07 3.096.571.62.41 1.063.97 1.356 1.648.07.105.023.164-.117.2m3.868 6.461c-1.064-.024-2.034-.328-2.852-1.029a3.665 3.665 0 01-1.262-2.255c-.21-1.32.152-2.489.947-3.529.853-1.122 1.881-1.706 3.272-1.95 1.192-.21 2.314-.095 3.33.595.923.63 1.496 1.484 1.648 2.605.198 1.578-.257 2.863-1.344 3.962-.771.783-1.718 1.273-2.805 1.495-.315.06-.63.07-.934.106zm2.78-4.72c-.011-.153-.011-.27-.034-.387-.21-1.157-1.274-1.81-2.384-1.554-1.087.245-1.788.935-2.045 2.033-.21.912.234 1.835 1.075 2.21.643.28 1.285.244 1.905-.07.923-.48 1.425-1.228 1.484-2.233z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">Migrate</text>
+    <text x="76" y="58" class="sub">GOOSE · ON DEPLOY</text>
+    <g transform="translate(76 68)">
+      <rect width="109" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 free tier</text>
+    </g>
+  </g>
+  <g transform="translate(1306 370)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">Google</text>
+    <text x="76" y="58" class="sub">SIGN-IN · OAUTH</text>
+    <g transform="translate(76 68)">
+      <rect width="30" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0</text>
+    </g>
+  </g>
+  <g transform="translate(1306 600)">
+    <rect width="236" height="100" rx="14" fill="#ffffff" stroke="#c9ccd2" filter="url(#mold)"/>
+    <rect x="14" y="16" width="48" height="48" rx="10" fill="#e7e9ec"/>
+    <g transform="translate(24 26) scale(1.1667)"><path d="M24 0V24l-9.365-8.045V24H0V0ZM2.942 21.087h8.751V9.563l9.365 8.204V2.919L2.942 2.914Z" fill="#1c1e21"/></g>
+    <text x="76" y="38" class="name">Neon Postgres</text>
+    <text x="76" y="58" class="sub">SCALES TO ZERO</text>
+    <g transform="translate(76 68)">
+      <rect width="109" height="20" rx="10" fill="#ff5f1f"/>
+      <text x="8" y="14" class="cost">$0 free plan</text>
+    </g>
+  </g>
+  <g transform="translate(1306 820)">
+    <path d="M14 0 H212 L236 24 V86 Q236 100 222 100 H14 Q0 100 0 86 V14 Q0 0 14 0 Z" fill="#ff5f1f" filter="url(#mold)"/>
+    <text x="16" y="28" class="hud" font-size="11" fill="#1c1e21">EST. TOTAL PER MONTH</text>
+    <text x="16" y="76" class="disp" font-size="32" fill="#1c1e21">≈ $0.10</text>
+  </g>
+  <text x="1542" y="950" class="hud" font-size="11" fill="#7c818a" text-anchor="end">USD · OCT 2026 PRICES</text>
+  <path d="M288 300 H333 V444 H358" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M288 450 H333 V455 H358" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M288 600 H333 V466 H358" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M602 420 H640 V280 H658" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M602 490 H640 V590 H658" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M902 270 H958" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M902 294 H946 V420 H958" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M784 330 V532" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <text x="794" y="440" class="hud" font-size="11" fill="#7c818a" text-anchor="start">SSR</text>
+  <path d="M902 590 H958" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M1202 576 H1262 V420 H1298" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M1202 604 H1278 V636 H1298" fill="none" stroke="#53575e" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-soft)"/>
+  <path d="M902 740 H958" fill="none" stroke="#7c818a" stroke-dasharray="7 6" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-mark)"/>
+  <path d="M1202 740 H1294 V664 H1298" fill="none" stroke="#7c818a" stroke-dasharray="7 6" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-mark)"/>
+  <path d="M288 870 H358" fill="none" stroke="#7c818a" stroke-dasharray="7 6" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-mark)"/>
+  <path d="M602 870 H658" fill="none" stroke="#7c818a" stroke-dasharray="7 6" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-mark)"/>
+  <path d="M902 870 H1294 V664 H1298" fill="none" stroke="#7c818a" stroke-dasharray="7 6" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#head-mark)"/>
+</svg>

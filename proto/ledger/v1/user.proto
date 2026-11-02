@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+import "ledger/v1/common.proto";
+
+message User {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string avatar_url = 4;
+  // Moved to Household.base_currency.
+  reserved 5;
+  reserved "base_currency";
+}
+
+// The caller's active household.
+message Household {
+  string id = 1;
+  string name = 2;
+  // Reporting currency for household-wide totals, shared by every member.
+  string base_currency = 3;
+  // The caller's role: "owner" or "member".
+  string role = 4;
+}
+
+service UserService {
+  // The signed-in user and their active household.
+  rpc GetMe(GetMeRequest) returns (GetMeResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+  // All supported ISO 4217 currencies.
+  rpc ListCurrencies(ListCurrenciesRequest) returns (ListCurrenciesResponse);
+}
+
+message GetMeRequest {}
+
+message GetMeResponse {
+  User user = 1;
+  Household household = 2;
+}
+
+message UpdateProfileRequest {
+  optional string name = 1;
+  // Moved to HouseholdService.UpdateHousehold.
+  reserved 2;
+  reserved "base_currency";
+}
+
+message UpdateProfileResponse {
+  User user = 1;
+}
+
+message ListCurrenciesRequest {}
+
+message ListCurrenciesResponse {
+  repeated Currency currencies = 1;
+}

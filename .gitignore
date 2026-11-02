@@ -1,0 +1,43 @@
+# Local-only notes, data and instructions
+/vault/
+/private/
+CLAUDE.local.md
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Next.js / OpenNext / SST
+.next/
+.open-next/
+.sst/
+out/
+next-env.d.ts
+
+# Builds
+/backend/bin/
+/backend/dist/
+*.exe
+bootstrap
+*.zip
+dist/
+*.tsbuildinfo
+
+# Tests
+coverage/
+/apps/web/test-results/
+/apps/web/playwright-report/
+/apps/web/blob-report/
+/apps/web/playwright/.cache/
+
+# Editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,26 @@
+/*
+ * Ledger/01 UI kit stylesheet: Tailwind v4 + Module/01 tokens + the kit layer.
+ * Consumers import this file once and add an @source for their own files.
+ */
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./tokens.generated.css";
+@import "./kit.css";
+
+@source "../";
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground font-sans text-body-md antialiased;
+  }
+  ::selection {
+    background: var(--color-signal-tint);
+    color: var(--color-ink);
+  }
+}

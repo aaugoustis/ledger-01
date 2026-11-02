@@ -1,0 +1,27 @@
+# Weekly dependency updates, grouped so each ecosystem opens at most one routine PR.
+version: 2
+updates:
+  # Workflows and the composite setup action pin actions by commit SHA.
+  - package-ecosystem: github-actions
+    directories: ["/", "/.github/actions/setup"]
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: gomod
+    directory: /backend
+    schedule:
+      interval: weekly
+    groups:
+      go:
+        update-types: [minor, patch]
+
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      js:
+        update-types: [minor, patch]

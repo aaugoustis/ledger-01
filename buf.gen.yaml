@@ -1,0 +1,19 @@
+version: v2
+clean: true
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/franco-roura/ledger-01/backend/gen
+plugins:
+  # Go plugins are pinned as `tool` dependencies in backend/go.mod (resolved through go.work).
+  - local: ["go", "tool", "protoc-gen-go"]
+    out: backend/gen
+    opt: paths=source_relative
+  - local: ["go", "tool", "protoc-gen-connect-go"]
+    out: backend/gen
+    opt: paths=source_relative
+  # Resolved from node_modules/.bin (run through `bun run gen:proto`).
+  - local: protoc-gen-es
+    out: packages/api/src/gen
+    opt: target=ts

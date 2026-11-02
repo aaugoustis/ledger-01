@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+// Conventions used across the API:
+// - Money is an int64 amount in the currency's minor units (cents) plus an ISO 4217 code.
+//   Amounts on transactions are always positive; the kind gives the direction.
+// - Calendar dates are "YYYY-MM-DD" strings (no time zone).
+// - Exchange rates are decimal strings: units of the target currency per 1 unit of the source.
+
+message Currency {
+  // ISO 4217 code, e.g. "USD".
+  string code = 1;
+  string name = 2;
+  string symbol = 3;
+  // Number of decimal places (2 for USD, 0 for JPY).
+  int32 minor_units = 4;
+}
+
+// An inclusive date range, both ends "YYYY-MM-DD".
+message DateRange {
+  string from = 1;
+  string to = 2;
+}
