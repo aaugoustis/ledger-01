@@ -147,11 +147,12 @@ tasks:
 
   # --- docs ----------------------------------------------------------------
   docs:render:
-    desc: Render the docs SVGs (icon, architecture map) to the PNGs the README embeds
+    desc: Render the docs SVGs (icon, architecture map, social preview) to PNGs
     dir: apps/web
     cmds:
       - bun scripts/render-svg.ts ../../docs/brand/icon.svg ../../docs/brand/icon.png 512
       - bun scripts/render-svg.ts ../../docs/brand/architecture.svg ../../docs/brand/architecture.png 1600
+      - bun scripts/render-svg.ts ../../docs/brand/social.svg ../../docs/brand/social.png 1280
 
   docs:screenshots:
     desc: Capture docs/screenshots from a made-up household (needs the database running)
