@@ -1,6 +1,6 @@
 {
   "name": "@ledger-01/backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "The Go API. This file only exists so Changesets versions it with the rest of the app."
 }

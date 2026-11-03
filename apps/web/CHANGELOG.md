@@ -1,5 +1,13 @@
 # @ledger-01/web
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @ledger-01/api@1.0.1
+  - @ledger-01/ui@1.0.1
+
 ## 1.0.0
 
 Initial public release of Ledger/01, a self-hostable personal and household finance app.
