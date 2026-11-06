@@ -383,6 +383,11 @@ func (s *Service) CategoryReportFor(ctx context.Context, a Actor, categoryID uui
 			Currency: strings.TrimSpace(row.Currency), OccurredOn: row.OccurredOn, Note: row.Note, LabelIDs: row.LabelIds,
 			CreatedBy: row.CreatedBy, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 		})
+		// The response limit applies to matching rows, including amount filters in the
+		// report currency, rather than to the first unfiltered rows in the database.
+		if len(out.Transactions) == 200 {
+			break
+		}
 	}
 	out.Unconverted = r.unconverted()
 	return out, nil

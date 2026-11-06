@@ -36,7 +36,6 @@ WHERE t.household_id = $1
   AND t.occurred_on BETWEEN $4 AND $5
   AND t.occurred_on <= $6
 ORDER BY t.occurred_on DESC, t.created_at DESC
-LIMIT 200
 `
 
 type CategoryTransactionsParams struct {
