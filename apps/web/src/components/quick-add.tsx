@@ -2,7 +2,7 @@
 
 import { Button } from "@ledger-01/ui/components/button";
 import { Plus } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TransactionSheet } from "@/components/transaction-sheet";
 import { useWallets } from "@/lib/api/hooks";
@@ -14,7 +14,6 @@ import { lastWalletId, startingWallet } from "@/lib/last-wallet";
  * page with ?new=transaction. It starts in the wallet last added to; the form can pick another.
  */
 export function QuickAdd() {
-  const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
   const { wallets, byId, isPending } = useWallets();
@@ -30,7 +29,8 @@ export function QuickAdd() {
   }
 
   // Opened by the app shortcut: wait for the wallets, then drop the parameter so a reload or the
-  // back button doesn't open the form again.
+  // back button doesn't open the form again. The native replaceState syncs with the Next router
+  // without fetching the page again.
   const requested = params.get("new") === "transaction";
   useEffect(() => {
     if (!requested || isPending) return;
@@ -42,8 +42,8 @@ export function QuickAdd() {
     const rest = new URLSearchParams(params);
     rest.delete("new");
     const q = rest.toString();
-    router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
-  }, [requested, isPending, wallets, params, pathname, router]);
+    window.history.replaceState(null, "", q ? `${pathname}?${q}` : pathname);
+  }, [requested, isPending, wallets, params, pathname]);
 
   // Without a wallet there's nowhere to add to; the wallets page offers to create one.
   if (!isPending && !canAdd) return null;
