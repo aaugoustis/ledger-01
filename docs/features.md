@@ -29,7 +29,9 @@ label.
 
 > [!TIP]
 > The new transaction sheet opens on its first field, and every pick moves you to the next one. A
-> typical expense takes four taps on a phone once the wallet is open.
+> typical expense takes four taps on a phone once the wallet is open, and no more from the
+> dashboard: there the sheet starts in the wallet you last added to, and a Wallet field below the
+> amount picks another.
 
 ## Transfers between currencies
 
@@ -76,7 +78,7 @@ the ones after it.
 
 Ledger/01 installs as an app on phones (a PWA): add it to your home screen from the browser. The
 layout is built for one-handed use, with a pinned **New transaction** button and inputs large enough
-that the browser doesn't zoom in.
+that the browser doesn't zoom in. Press and hold the app's icon for a **New transaction** shortcut.
 
 <p align="center">
   <img src="screenshots/mobile-dashboard.png" width="260" alt="The dashboard on a phone">

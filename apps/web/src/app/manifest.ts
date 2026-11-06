@@ -15,5 +15,15 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/icon/512", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/icon/512", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
+    // Press and hold the installed app's icon. The dashboard opens the form (components/quick-add).
+    shortcuts: [
+      {
+        name: "New transaction",
+        short_name: "New",
+        description: "Add an expense, income or transfer",
+        url: "/dashboard?new=transaction",
+        icons: [{ src: "/icon/192", sizes: "192x192", type: "image/png" }],
+      },
+    ],
   };
 }

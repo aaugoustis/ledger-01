@@ -39,6 +39,7 @@ import { CategoryPicker } from "@/components/category-picker";
 import { LabelPicker } from "@/components/label-picker";
 import { ScopeDialog } from "@/components/scope-dialog";
 import { WalletSelect } from "@/components/wallet-select";
+import { rememberWallet } from "@/lib/last-wallet";
 import { today } from "@/lib/period";
 import {
   endOptions,
@@ -124,6 +125,9 @@ type Pending =
  * transfers use the three-field converter: sent, received and rate. Any of them can repeat; saving
  * or deleting an occurrence of a recurring one asks whether it applies to only that occurrence or
  * to the ones after it too.
+ *
+ * With onWalletChange (a new transaction started outside a wallet page), expenses and income show
+ * a Wallet field after the amount, and a transfer's From wallet follows it.
  */
 export function TransactionForm({
   wallet,
@@ -133,6 +137,7 @@ export function TransactionForm({
   minorUnits,
   editing,
   onDone,
+  onWalletChange,
 }: {
   wallet: Wallet;
   wallets: Wallet[];
@@ -141,6 +146,7 @@ export function TransactionForm({
   minorUnits: (code: string) => number;
   editing?: Transaction | null;
   onDone: () => void;
+  onWalletChange?: (id: string) => void;
 }) {
   const id = useId();
   const isEdit = Boolean(editing);
@@ -211,6 +217,7 @@ export function TransactionForm({
     setFromId(nextFrom);
     setToId(nextTo);
     setFx(initialFxState());
+    if (nextFrom !== fromId) onWalletChange?.(nextFrom);
   }
 
   function resetForNext() {
@@ -269,6 +276,8 @@ export function TransactionForm({
       return;
     }
     toast.success(isEdit ? "Saved" : "Added");
+    // The next transaction started outside a wallet page starts here.
+    if (!isEdit && mode !== "transfer") rememberWallet(wallet.id);
     if (!isEdit && keepOpen) resetForNext();
     else onDone();
   }
@@ -459,6 +468,16 @@ export function TransactionForm({
               aria-invalid={amount !== "" && parsedAmount === null}
             />
           </Field>
+          {onWalletChange && (
+            <Field label="Wallet" htmlFor={`${id}-wallet`} className="sm:col-span-2">
+              <WalletSelect
+                id={`${id}-wallet`}
+                wallets={wallets}
+                value={wallet.id}
+                onChange={(v) => changeWallets(v, v === toId ? "" : toId)}
+              />
+            </Field>
+          )}
         </div>
       )}
 
