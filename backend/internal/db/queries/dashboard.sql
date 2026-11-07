@@ -54,5 +54,4 @@ WHERE t.household_id = @household_id
   AND t.wallet_id = ANY(@wallet_ids::uuid[])
   AND t.occurred_on BETWEEN @from_date AND @to_date
   AND t.occurred_on <= @today
-ORDER BY t.occurred_on DESC, t.created_at DESC
-LIMIT 200;
+ORDER BY t.occurred_on DESC, t.created_at DESC;
